@@ -146,7 +146,10 @@ def ping():
 level = 0
 pump = False
 fan = False
-
+pump_time = 10
+last_water = 0
+light_time = 32400
+last_light = 0
 init_ros()
 init_sensors()
 rospy.sleep(2) # Give a chance for the initial sensor values to be read
@@ -166,27 +169,46 @@ while not rospy.core.is_shutdown():
     weight = sensorsG.weight
     reservoir = sensorsG.water_level
 
-    # if light < light_avg:
-    level += int(round((light_avg - light) / 100))
-    level = clamp(0, 255, level)
-    # else:
-    #     level += 0
-    
-    pump = moist < moisture_avg
-    fan = temp > temp_avg
+    fan = humid > humidity_avg
 
-    print(pump, fan, level, weight)
-    
+    if((sensorsG.time - last_water) > 21600): #pump schedule 30 seconds every 6 hours
+        pump_time = 10
+        pump = True
+        last_water = sensorsG.time
+    elif(pump_time==0):
+        pump = False
+
+    if((sensorsG.time - last_light) > 86400): #pump schedule 30 seconds every 6 hours
+        light_time = 32400
+        level = 255
+        last_light = sensorsG.time
+    elif(light_time==0):
+        level = 0
+
+    pump_time-=1
+    #wpump_pub.publish(pump)
+    light_time-=1
     led_pub.publish(level)
-    wpump_pub.publish(pump)
     fan_pub.publish(fan)
+
+    print(pump,fan,level,weight)
 
     ### Check for input
     if sys.stdin in select.select([sys.stdin],[],[],0)[0]:
         input = sys.stdin.readline()
         if input[0] == 'q':
             quit()
-        else:
-            print("fuck off")
-            
+        else: 
+            try:
+                if input[0] == 'p':
+                    wpump_pub.publish(False)
+                elif input[0] == 'v':
+                    print("Humidity is: %.1f" %(sensorsG.humidity))
+                    print("Light Level is: %.1f" %(sensorsG.light_level))
+                    print("Temperature is: %.1f" %(sensorsG.temperature))
+                    print("Soil Moisture: %.1f" %(sensorsG.moisture))
+                else:
+                    print("fuck off")
+            except:
+                print("fuck off")
     rospy.sleep(1)
