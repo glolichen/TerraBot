@@ -175,7 +175,7 @@ while not rospy.core.is_shutdown():
     #fan = humid > humidity_avg
 
     if((sensorsG.time - last_water) > 43200): #pump schedule 3 seconds every 12 hours
-        pump_time = 3
+        pump_time = 5
         pump = True
         last_water = sensorsG.time
     elif(pump_time==0):
