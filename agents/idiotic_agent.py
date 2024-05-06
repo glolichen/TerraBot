@@ -9,6 +9,7 @@ sys.path.insert(0, os.getcwd()[:os.getcwd().find('TerraBot')]+'TerraBot/lib')
 from terrabot_utils import clock_time
 from freqmsg import tomsg
 from topic_def import sensor_types, actuator_types
+import traceback
 
 light_optimal_low, light_optimal_high = limits.optimal["light_level"]
 water_optimal_low, water_optimal_high = limits.optimal["water_level"]
@@ -146,10 +147,12 @@ def ping():
 level = 0
 pump = False
 fan = False
-pump_time = 10
+pump_time = 4
 last_water = 0
 light_time = 32400
 last_light = 0
+fan_time = 10
+last_fan = 0
 init_ros()
 init_sensors()
 rospy.sleep(2) # Give a chance for the initial sensor values to be read
@@ -169,46 +172,66 @@ while not rospy.core.is_shutdown():
     weight = sensorsG.weight
     reservoir = sensorsG.water_level
 
-    fan = humid > humidity_avg
+    #fan = humid > humidity_avg
 
-    if((sensorsG.time - last_water) > 21600): #pump schedule 30 seconds every 6 hours
-        pump_time = 10
+    if((sensorsG.time - last_water) > 43200): #pump schedule 3 seconds every 12 hours
+        pump_time = 3
         pump = True
         last_water = sensorsG.time
     elif(pump_time==0):
         pump = False
 
-    if((sensorsG.time - last_light) > 86400): #pump schedule 30 seconds every 6 hours
+    if((sensorsG.time - last_light) > 86400): #light schedule 9 hours for every 24 hours
         light_time = 32400
         level = 255
         last_light = sensorsG.time
     elif(light_time==0):
         level = 0
 
+    if((sensorsG.time - last_fan) > 7200): #fan schedule 10 seconds for every 2 hours
+        fan_time = 10
+        fan = True
+        last_fan = sensorsG.time
+    elif(fan_time==0):
+        fan = False
+
+
     pump_time-=1
-    #wpump_pub.publish(pump)
+    wpump_pub.publish(pump)
     light_time-=1
     led_pub.publish(level)
+    fan_time-=1
     fan_pub.publish(fan)
 
     print(pump,fan,level,weight)
 
     ### Check for input
     if sys.stdin in select.select([sys.stdin],[],[],0)[0]:
-        input = sys.stdin.readline()
-        if input[0] == 'q':
+        input2 = sys.stdin.readline()
+        print(input2)
+        if input2[0] == 'q':
             quit()
         else: 
             try:
-                if input[0] == 'p':
-                    wpump_pub.publish(False)
-                elif input[0] == 'v':
+                if input2[0] == 'p':
+                    wpump_pub.publish(input2.find("on") > 0)
+                elif input2[0] == 'f':
+                    fan_pub.publish(input2.find("on") > 0)
+                elif input2[0] == 'l':
+                    #print(input[1:])
+                    #id = ["on", "off"].index(input[1:].strip(" ")) + 1
+                    #print(id)
+                    #level = int([input[1:], 255, 0][id])
+                    level = input2.split(" ")[1].strip("\n")
+                    level = int([255, 0][["on", "off"].index(level)] if "o" in level else level)
+                    led_pub.publish(level)
+                elif input2[0] == 'v':
                     print("Humidity is: %.1f" %(sensorsG.humidity))
                     print("Light Level is: %.1f" %(sensorsG.light_level))
                     print("Temperature is: %.1f" %(sensorsG.temperature))
                     print("Soil Moisture: %.1f" %(sensorsG.moisture))
                 else:
-                    print("fuck off")
-            except:
-                print("fuck off")
+                    print("write an actual command / follow instructions")
+            except Exception:
+                print("command error / follow my expectations")
     rospy.sleep(1)
