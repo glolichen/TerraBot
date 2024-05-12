@@ -38,7 +38,7 @@ class TerraBotEnvironment(gym.Env):
 			wrapper.get_light_level()
 		])
 		self._targets = np.copy(self._sensors)
-		while not np.array_equal(self._sensors, self._target):
+		while not np.array_equal(self._sensors, self._targets):
 			self._targets = np.array([
 				random.SystemRandom().randint(0, 1000),
 				random.SystemRandom().randint(0, 100),
@@ -64,7 +64,7 @@ class TerraBotEnvironment(gym.Env):
 		])
 		self._actuators = self._action_to_actuator[action]
 
-		terminated =  np.array_equal(self._sensors, self._target)
+		terminated =  np.array_equal(self._sensors, self._targets)
 		reward = 1 if terminated else 0
 
 		return self._get_observations(), reward, terminated, False, self._get_info()
