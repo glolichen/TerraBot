@@ -27,6 +27,10 @@ class TerraBotEnvironment(gym.Env):
 		return np.concatenate((self._sensors, self._targets, self._actuators))
 	def _get_info(self):
 		return np.linalg.norm(self._sensors - self._targets, ord=2)
+	def _apply_actuators(self):
+		wrapper.set_led(self._actuators[0])
+		wrapper.set_fan(self._actuators[1])
+		wrapper.set_pump(self._actuators[2])
 
 	def reset(self, seed=None, options=None):
 		super().reset(seed=seed)
@@ -63,6 +67,7 @@ class TerraBotEnvironment(gym.Env):
 			wrapper.get_light_level()
 		])
 		self._actuators = self._action_to_actuator[action]
+		self._apply_actuators()
 
 		terminated =  np.array_equal(self._sensors, self._targets)
 		reward = 1 if terminated else 0
