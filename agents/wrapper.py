@@ -26,13 +26,12 @@ class Sensors:
     temperature_raw = [0,0]
     weight_raw = [0, 0]
 
-sensorsG = Sensors()
 def init_sensors():
     global sensorsG
     sensorsG.time = rospy.get_time()
 
 def init_ros ():
-    global led_pub, wpump_pub, fan_pub, ping_pub, camera_pub, speedup_pub, freq_pub, sensorsG
+    global led_pub, wpump_pub, fan_pub, ping_pub, sensorsG
 
     rospy.init_node("interactive_agent", anonymous = True)
 
@@ -42,13 +41,7 @@ def init_ros ():
                                 latch = True, queue_size = 1)
     fan_pub = rospy.Publisher("fan_input", actuator_types['fan'],
                               latch = True, queue_size = 1)
-
     ping_pub = rospy.Publisher("ping", Bool, latch = True, queue_size = 1)
-    camera_pub = rospy.Publisher("camera", actuator_types['cam'],
-                                 latch = True, queue_size = 1)
-    speedup_pub = rospy.Publisher("speedup", Int32, latch = True, queue_size = 1)
-    freq_pub = rospy.Publisher("freq_input", actuator_types['freq'],
-                               latch=True, queue_size=1)
 
     rospy.Subscriber("smoist_output", sensor_types['smoist'],
                      moisture_reaction, sensorsG)
@@ -92,20 +85,6 @@ def power_reaction(data, sensorsG):
     sensorsG.current = -data.data[0]
     sensorsG.energy = -data.data[1]
 
-last_ping = 0
-def ping():
-    global last_ping
-    #print("PING! %s" %clock_time(sensorsG.time))
-    last_ping = sensorsG.time
-    ping_pub.publish(True)
-
-init_ros()
-init_sensors()
-rospy.sleep(2) # Give a chance for the initial sensor values to be read
-
-while rospy.get_time() == 0: rospy.sleep(0.1) # Wait for clock to start up correctly
-# print("Connected and ready for interaction")
-
 def get_light_level():
 	return sensorsG.light_level
 def get_temperature():
@@ -114,3 +93,18 @@ def get_humidity():
     return sensorsG.humidity
 def get_weight():
     return sensorsG.weight
+
+def set_led(val):
+    led_pub.publish(val)
+def set_pump(val):
+    wpump_pub.publish(val)
+def set_fan(val):
+    fan_pub.publish(val)
+    
+def ping():
+    ping_pub.publish(True)
+
+sensorsG = Sensors()
+    
+init_ros()
+init_sensors()
