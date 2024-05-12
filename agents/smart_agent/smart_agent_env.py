@@ -65,7 +65,9 @@ class TerraBotEnvironment(gym.Env):
 		self._actuators = self._action_to_actuators[action]
 		self._apply_actuators()
 
-		terminated =  np.array_equal(self._sensors, self._targets)
-		reward = 1 if terminated else 0
+		reward = self._get_info()
+		terminated = reward <= 1
+		reward = 1e9 if reward == 0 else abs(3 / reward)
 
-		return self._get_observations(), reward, terminated, False, self._get_info()
+		return self._get_observations(), reward, terminated
+	
