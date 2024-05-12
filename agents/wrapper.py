@@ -34,7 +34,6 @@ def init_ros():
     global led_pub, wpump_pub, fan_pub, ping_pub, camera_pub, speedup_pub, freq_pub, sensorsG
 
     rospy.set_param("use_sim_time", True)
-    print("hi")
     rospy.init_node("interactive_agent", anonymous = True)
 
     led_pub = rospy.Publisher("led_input", actuator_types['led'],

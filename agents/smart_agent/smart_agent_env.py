@@ -9,24 +9,24 @@ class TerraBotEnvironment(gym.Env):
 	def __init__(self, size=5):
 		self._targets = np.array([400, 75, 26, 900])
 
-		# SENSORS------------------------------------  ACTUATORS----------------------------
-		# [weight, humidity, temperature, light level, led strength, fan on/off, pump on/off]
-		self.observation_space = gym.spaces.Box(0, 1000, shape=(7,), dtype=int)
+		# sensors, targets, actuators
+		self.observation_space = gym.spaces.Box(0, 1000, shape=(11,), dtype=int)
 
 		# (255 - 0 + 1) + 2 + 2 = 256 + 4 + 260
 		self.action_space = gym.spaces.Discrete(260)
 
+		self._action_to_actuators = [np.array([]) for _ in range(260)]
 		for i in range(256):
-			self._action_to_actuator[i] = np.array([i, 0, 0])
-		self._action_to_actuator[256] = [0, 0, 0]
-		self._action_to_actuator[257] = [0, 1, 0]
-		self._action_to_actuator[258] = [0, 0, 0]
-		self._action_to_actuator[259] = [0, 0, 1]
+			self._action_to_actuators[i] = np.array([i, 0, 0])
+		self._action_to_actuators[256] = [0, 0, 0]
+		self._action_to_actuators[257] = [0, 1, 0]
+		self._action_to_actuators[258] = [0, 0, 0]
+		self._action_to_actuators[259] = [0, 0, 1]
 
 	def _get_observations(self):
 		return np.concatenate((self._sensors, self._targets, self._actuators))
 	def _get_info(self):
-		return np.linalg.norm(self._sensors - self._targets, ord=2)
+		return np.linalg.norm(self._sensors - self._targets, ord=1)
 	def _apply_actuators(self):
 		wrapper.set_led(self._actuators[0])
 		wrapper.set_fan(self._actuators[1])
@@ -50,12 +50,8 @@ class TerraBotEnvironment(gym.Env):
 				random.SystemRandom().randint(0, 1000)
 			])
 
-		# self._actuators = np.array([
-		# 	random.SystemRandom().randint(0, 255),
-		# 	random.SystemRandom().randint(0, 1),
-		# 	random.SystemRandom().randint(0, 1)
-		# ])
-		# self.targets = np.array([400, 75, 26, 900])
+		self._actuators = np.array([0, 0, 0])
+		self._apply_actuators()
 
 		return self._get_observations(), self._get_info()
 
@@ -66,7 +62,7 @@ class TerraBotEnvironment(gym.Env):
 			wrapper.get_temperature(),
 			wrapper.get_light_level()
 		])
-		self._actuators = self._action_to_actuator[action]
+		self._actuators = self._action_to_actuators[action]
 		self._apply_actuators()
 
 		terminated =  np.array_equal(self._sensors, self._targets)
