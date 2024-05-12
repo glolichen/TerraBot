@@ -27,11 +27,7 @@ temp_avg = (temp_optimal_low + temp_optimal_high) / 2
 ### ROS-related stuff
 ### Set up publishers, subscribers, and message handlers
 
-def init_ros():
-	global ping_pub
-
-time = 0
-last_ping = 0
+time, last_ping = 0, 0
 
 level = 0
 pump = False
@@ -42,7 +38,6 @@ light_time = 32400
 last_light = 0
 fan_time = 10
 last_fan = 0
-init_ros()
 rospy.sleep(2) # Give a chance for the initial sensor values to be read
 while rospy.get_time() == 0: rospy.sleep(0.1) # Wait for clock to start up correctly
 print("Connected and ready for interaction")
@@ -53,6 +48,7 @@ while not rospy.core.is_shutdown():
 	# Ping every 3 minutes, twice as frequently as timeout in TerraBot
 	if (time - last_ping) >= 180:
 		wrapper.ping()
+		last_ping = time
 
 	if((time - last_water) > 43200): #pump schedule 3 seconds every 12 hours
 		pump_time = 5
@@ -85,33 +81,4 @@ while not rospy.core.is_shutdown():
 
 	print(pump, fan, level, wrapper.get_weight(), wrapper.get_light_level())
 
-	### Check for input
-	# if sys.stdin in select.select([sys.stdin],[],[],0)[0]:
-	# 	input2 = sys.stdin.readline()
-	# 	print(input2)
-	# 	if input2[0] == 'q':
-	# 		quit()
-	# 	else: 
-	# 		try:
-	# 			if input2[0] == 'p':
-	# 				wpump_pub.publish(input2.find("on") > 0)
-	# 			elif input2[0] == 'f':
-	# 				fan_pub.publish(input2.find("on") > 0)
-	# 			elif input2[0] == 'l':
-	# 				#print(input[1:])
-	# 				#id = ["on", "off"].index(input[1:].strip(" ")) + 1
-	# 				#print(id)
-	# 				#level = int([input[1:], 255, 0][id])
-	# 				level = input2.split(" ")[1].strip("\n")
-	# 				level = int([255, 0][["on", "off"].index(level)] if "o" in level else level)
-	# 				led_pub.publish(level)
-	# 			elif input2[0] == 'v':
-	# 				print("Humidity is: %.1f" %(sensorsG.humidity))
-	# 				print("Light Level is: %.1f" %(sensorsG.light_level))
-	# 				print("Temperature is: %.1f" %(sensorsG.temperature))
-	# 				print("Soil Moisture: %.1f" %(sensorsG.moisture))
-	# 			else:
-	# 				print("write an actual command / follow instructions")
-	# 		except Exception:
-	# 			print("command error / follow my expectations")
 	rospy.sleep(1)

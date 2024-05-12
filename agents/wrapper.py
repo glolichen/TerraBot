@@ -31,7 +31,7 @@ def init_sensors():
     sensorsG.time = rospy.get_time()
 
 def init_ros ():
-    global led_pub, wpump_pub, fan_pub, ping_pub, sensorsG
+    global led_pub, wpump_pub, fan_pub, ping_pub, camera_pub, speedup_pub, freq_pub, sensorsG
 
     rospy.init_node("interactive_agent", anonymous = True)
 
@@ -42,6 +42,11 @@ def init_ros ():
     fan_pub = rospy.Publisher("fan_input", actuator_types['fan'],
                               latch = True, queue_size = 1)
     ping_pub = rospy.Publisher("ping", Bool, latch = True, queue_size = 1)
+    camera_pub = rospy.Publisher("camera", actuator_types['cam'],
+                                 latch = True, queue_size = 1)
+    speedup_pub = rospy.Publisher("speedup", Int32, latch = True, queue_size = 1)
+    freq_pub = rospy.Publisher("freq_input", actuator_types['freq'],
+                               latch=True, queue_size=1)
 
     rospy.Subscriber("smoist_output", sensor_types['smoist'],
                      moisture_reaction, sensorsG)
@@ -94,13 +99,18 @@ def get_humidity():
 def get_weight():
     return sensorsG.weight
 
-def set_led(val):
+def set_led(val: Int32):
     led_pub.publish(val)
-def set_pump(val):
+def set_pump(val: Bool):
     wpump_pub.publish(val)
-def set_fan(val):
+def set_fan(val: Bool):
     fan_pub.publish(val)
-    
+def send_camera(val: String):
+    camera_pub.publish(val)
+def set_speedup(val: Int32):
+    speedup_pub.publish(val)
+def set_frequency(val: String):
+    freq_pub.publish(val)
 def ping():
     ping_pub.publish(True)
 
