@@ -230,6 +230,8 @@ while not rospy.core.is_shutdown():
                     print("Light Level is: %.1f" %(sensorsG.light_level))
                     print("Temperature is: %.1f" %(sensorsG.temperature))
                     print("Soil Moisture: %.1f" %(sensorsG.moisture))
+                elif input2[0] == 's':
+                    speedup_pub.publish(int(input2[1:]))
                 else:
                     print("write an actual command / follow instructions")
             except Exception:

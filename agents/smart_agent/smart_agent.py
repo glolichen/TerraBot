@@ -1,4 +1,4 @@
-from smart_agent.environment import TerraBotEnvironment
+from smart_agent.smart_agent_env import TerraBotEnvironment
 import torch
 import torch.nn as nn
 import torch.optim as optim

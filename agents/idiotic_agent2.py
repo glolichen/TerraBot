@@ -38,8 +38,6 @@ light_time = 32400
 last_light = 0
 fan_time = 10
 last_fan = 0
-rospy.sleep(2) # Give a chance for the initial sensor values to be read
-while rospy.get_time() == 0: rospy.sleep(0.1) # Wait for clock to start up correctly
 print("Connected and ready for interaction")
 
 while not rospy.core.is_shutdown():
@@ -80,5 +78,14 @@ while not rospy.core.is_shutdown():
 	wrapper.set_fan(fan)
 
 	print(pump, fan, level, wrapper.get_weight(), wrapper.get_light_level())
+
+	if sys.stdin in select.select([sys.stdin],[],[],0)[0]:
+		input2 = sys.stdin.readline()
+		if input2[0] == 'q':
+			quit()
+		elif input2[0] == 's':
+			wrapper.set_speedup(int(input2[1:]))
+		else:
+			print("problem")
 
 	rospy.sleep(1)
