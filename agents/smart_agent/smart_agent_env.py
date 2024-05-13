@@ -47,13 +47,16 @@ class TerraBotEnvironment(gym.Env):
 			wrapper.get_light_level()
 		])
 		self._targets = np.copy(self._sensors)
-		while not np.array_equal(self._sensors, self._targets):
+	        while not np.array_equal(self._sensors, self._targets):
 			self._targets = np.array([
 				random.SystemRandom().randint(0, 1000),
 				random.SystemRandom().randint(0, 100),
 				random.SystemRandom().randint(10, 40),
 				random.SystemRandom().randint(0, 1000)
 			])
+
+	        print(self._sensors)
+		print(self._targets)
 
 		self._actuators = np.array([0, 0, 0])
 		self._apply_actuators()
