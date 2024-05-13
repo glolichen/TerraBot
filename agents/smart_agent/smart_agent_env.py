@@ -13,15 +13,19 @@ class TerraBotEnvironment(gym.Env):
 		self.observation_space = gym.spaces.Box(0, 1000, shape=(11,), dtype=int)
 
 		# (255 - 0 + 1) + 2 + 2 = 256 + 4 + 260
-		self.action_space = gym.spaces.Discrete(260)
+		# self.action_space = gym.spaces.Discrete(8)
+		self.action_space = gym.spaces.Discrete(4)
 
-		self._action_to_actuators = [np.array([]) for _ in range(260)]
-		for i in range(256):
-			self._action_to_actuators[i] = np.array([i, 0, 0])
-		self._action_to_actuators[256] = [0, 0, 0]
-		self._action_to_actuators[257] = [0, 1, 0]
-		self._action_to_actuators[258] = [0, 0, 0]
-		self._action_to_actuators[259] = [0, 0, 1]
+		self._action_to_actuators = [
+			[0, 0, 0],
+			#[0, 0, 1],
+			[0, 1, 0],
+			#[0, 1, 1],
+			[255, 0, 0],
+			#[255, 0, 1],
+			[255, 1, 0],
+			#[255, 1, 1]
+		]
 
 	def _get_observations(self):
 		return np.concatenate((self._sensors, self._targets, self._actuators))
@@ -30,7 +34,8 @@ class TerraBotEnvironment(gym.Env):
 	def _apply_actuators(self):
 		wrapper.set_led(self._actuators[0])
 		wrapper.set_fan(self._actuators[1])
-		wrapper.set_pump(self._actuators[2])
+		wrapper.set_pump(0)
+		# wrapper.set_pump(self._actuators[2])
 
 	def reset(self, seed=None, options=None):
 		super().reset(seed=seed)
