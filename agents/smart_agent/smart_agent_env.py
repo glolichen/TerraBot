@@ -11,9 +11,6 @@ class TerraBotEnvironment(gym.Env):
 
         # sensors, targets, actuators
         self.observation_space = gym.spaces.Box(0, 1000, shape=(9,), dtype=int)
-
-        # (255 - 0 + 1) + 2 + 2 = 256 + 4 + 260
-        # self.action_space = gym.spaces.Discrete(8)
         self.action_space = gym.spaces.Discrete(256 * 2)
         
         self.action_to_actuators = []
@@ -59,7 +56,6 @@ class TerraBotEnvironment(gym.Env):
 
     def step(self, action):
         self._sensors = np.array([
-            wrapper.get_weight(),
             wrapper.get_humidity(),
             wrapper.get_temperature(),
             wrapper.get_light_level()
