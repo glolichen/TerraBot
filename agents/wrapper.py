@@ -32,8 +32,8 @@ def init_sensors():
 
 def init_ros():
     global led_pub, wpump_pub, fan_pub, ping_pub, camera_pub, speedup_pub, freq_pub, sensorsG
-
-    rospy.set_param("use_sim_time", True)
+    
+    rospy.set_param("use_sim_time", False)
     rospy.init_node("interactive_agent", anonymous = True)
 
     led_pub = rospy.Publisher("led_input", actuator_types['led'],
@@ -42,6 +42,7 @@ def init_ros():
                                 latch = True, queue_size = 1)
     fan_pub = rospy.Publisher("fan_input", actuator_types['fan'],
                               latch = True, queue_size = 1)
+
     ping_pub = rospy.Publisher("ping", Bool, latch = True, queue_size = 1)
     camera_pub = rospy.Publisher("camera", actuator_types['cam'],
                                  latch = True, queue_size = 1)
