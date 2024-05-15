@@ -93,7 +93,7 @@ def power_reaction(data, sensorsG):
     sensorsG.energy = -data.data[1]
 
 def get_light_level():
-	return sensorsG.light_level
+    return sensorsG.light_level
 def get_temperature():
     return sensorsG.temperature
 def get_humidity():
