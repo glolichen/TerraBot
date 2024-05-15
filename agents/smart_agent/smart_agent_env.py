@@ -16,7 +16,7 @@ class TerraBotEnvironment(gym.Env):
         # self.action_space = gym.spaces.Discrete(8)
         self.action_space = gym.spaces.Discrete(4)
 
-        self._action_to_actuators = [
+        self.action_to_actuators = [
             [0, 0, 0],
             #[0, 0, 1],
             [0, 1, 0],
@@ -70,7 +70,7 @@ class TerraBotEnvironment(gym.Env):
             wrapper.get_temperature(),
             wrapper.get_light_level()
         ])
-        self._actuators = self._action_to_actuators[action]
+        self._actuators = self.action_to_actuators[action]
         self._apply_actuators()
 
         reward = self._get_info()
