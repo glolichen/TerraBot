@@ -72,6 +72,8 @@ class TerraBotEnvironment(gym.Env):
         reward = 1e9 if reward == 0 else abs(3 / reward)
         
         print("action: " + self.action_to_actuators[action])
+        print("sensor: " + self._sensors)
+        print("target: " + self._targets)
         print("reward: " + reward)
         print("done:   " + terminated)
 
