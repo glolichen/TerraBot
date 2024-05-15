@@ -14,18 +14,12 @@ class TerraBotEnvironment(gym.Env):
 
         # (255 - 0 + 1) + 2 + 2 = 256 + 4 + 260
         # self.action_space = gym.spaces.Discrete(8)
-        self.action_space = gym.spaces.Discrete(4)
-
-        self.action_to_actuators = [
-            [0, 0, 0],
-            #[0, 0, 1],
-            [0, 1, 0],
-            #[0, 1, 1],
-            [255, 0, 0],
-            #[255, 0, 1],
-            [255, 1, 0],
-            #[255, 1, 1]
-        ]
+        self.action_space = gym.spaces.Discrete(256 * 2)
+        
+        self.action_to_actuators = []
+        for i in range(256):
+            self.action_to_actuators.append([i, 0])
+            self.action_to_actuators.append([i, 1])
 
     def _get_observations(self):
         return np.concatenate((self._sensors, self._targets, self._actuators))
@@ -41,18 +35,18 @@ class TerraBotEnvironment(gym.Env):
         super().reset(seed=seed)
 
         self._sensors = np.array([
-            wrapper.get_weight(),
+            # wrapper.get_weight(),
             wrapper.get_humidity(),
             wrapper.get_temperature(),
             wrapper.get_light_level()
         ])
         self._targets = np.copy(self._sensors)
-        while not np.array_equal(self._sensors, self._targets):
+        while np.array_equal(self._sensors, self._targets):
             self._targets = np.array([
-                random.SystemRandom().randint(0, 1000),
-                random.SystemRandom().randint(0, 100),
-                random.SystemRandom().randint(10, 40),
-                random.SystemRandom().randint(0, 1000)
+                # random.SystemRandom().randint(0, 1000),
+                random.SystemRandom().randint(70, 80),
+                random.SystemRandom().randint(25, 27),
+                random.SystemRandom().randint(860, 940)
             ])
 
         print(self._sensors)
@@ -76,6 +70,10 @@ class TerraBotEnvironment(gym.Env):
         reward = self._get_info()
         terminated = reward <= 1
         reward = 1e9 if reward == 0 else abs(3 / reward)
+        
+        print("action: " + self.action_to_actuators[action])
+        print("reward: " + reward)
+        print("done:   " + terminated)
 
         return self._get_observations(), reward, terminated
     
