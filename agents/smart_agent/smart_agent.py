@@ -43,10 +43,11 @@ for episode in range(10000):
 		state = torch.tensor(state, dtype=torch.float32).reshape(1, -1)
 		probs = policy(state)
 		action = torch.multinomial(probs, 1).item()
-		log_prob = torch.log(probs[0, action])
+                print("taking action: " + str(action))
+                log_prob = torch.log(probs[0, action])
 
 		# Take step
-		next_state, reward, done, _, _ = env.step(action)
+		next_state, reward, done = env.step(action)
 		rewards.append(reward)
 		log_probs.append(log_prob)
 		state = next_state
