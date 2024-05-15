@@ -7,10 +7,10 @@ class TerraBotEnvironment(gym.Env):
     # [weight, humidity, temperature, light level]
     # TODO find actual optimal weight
     def __init__(self, size=5):
-        self._targets = np.array([400, 75, 26, 900])
+        self._targets = np.array([75, 26, 900])
 
         # sensors, targets, actuators
-        self.observation_space = gym.spaces.Box(0, 1000, shape=(11,), dtype=int)
+        self.observation_space = gym.spaces.Box(0, 1000, shape=(9,), dtype=int)
 
         # (255 - 0 + 1) + 2 + 2 = 256 + 4 + 260
         # self.action_space = gym.spaces.Discrete(8)
