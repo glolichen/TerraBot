@@ -94,12 +94,23 @@ def power_reaction(data, sensorsG):
 
 def get_light_level():
     return sensorsG.light_level
+def get_light_level_raw():
+    return sensorsG.light_level_raw
+
 def get_temperature():
     return sensorsG.temperature
+def get_temperature_raw():
+    return sensorsG.temperature_raw
+
 def get_humidity():
     return sensorsG.humidity
+def get_humidity_raw():
+    return sensorsG.humidity_raw
+
 def get_weight():
     return sensorsG.weight
+def get_weight_raw():
+    return sensorsG.weight_raw
 
 def set_led(val: Int32):
     led_pub.publish(val)
