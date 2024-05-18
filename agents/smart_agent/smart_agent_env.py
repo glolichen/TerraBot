@@ -10,7 +10,7 @@ class TerraBotEnvironment(gym.Env):
         self._targets = np.array([75, 26, 900])
 
         # sensors, targets, actuators
-        self.observation_space = gym.spaces.Box(0, 1000, shape=(9,), dtype=int)
+        self.observation_space = gym.spaces.Box(0, 1000, shape=(8,), dtype=int)
         self.action_space = gym.spaces.Discrete(256 * 2)
         
         self.action_to_actuators = []
