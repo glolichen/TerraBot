@@ -56,9 +56,9 @@ class TerraBotEnvironment(gym.Env):
 
     def step(self, action):
         self._sensors = np.array([
-            wrapper.get_humidity(),
-            wrapper.get_temperature(),
-            wrapper.get_light_level()
+            wrapper.get_humidity_raw()[1],
+            wrapper.get_temperature_raw()[1],
+            wrapper.get_light_level_raw()[1]
         ])
         self._actuators = self.action_to_actuators[action]
         self._apply_actuators()
